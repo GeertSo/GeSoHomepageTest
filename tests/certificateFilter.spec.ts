@@ -17,14 +17,16 @@ test.beforeEach('open homepage', async ({page}) => {
 });
 
 test(
-  'check if all filters are visible', async ({ page }) => {
+  'check if all filters are visible (on Desktop)', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 }); // typical desktop
   for (let f=0; f < filterCount; f++) {
     await expect(page.getByRole('button', { name: filters[f].name })).toBeVisible();
   } 
 });
 
 test(
-  'check if filter AI/Machine Learning shows only relevant cards', async ({ page }) => {
+  'check if filter shows only relevant cards (on Desktop)', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 }); // typical desktop
   const cards = page.locator('[data-title]');
   const count = await cards.count();
 

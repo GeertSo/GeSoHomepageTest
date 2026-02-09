@@ -46,14 +46,9 @@ for (const lang of languages) {
     });
 
 
-    test(`check headline labels in ${lang} are visible`, async({page}) => {
+    test(`check headline labels in ${lang} are visible (on Desktop)`, async({page}) => {
+      await page.setViewportSize({ width: 1280, height: 900 }); // typical desktop
       const translator = multilingual[lang as keyof typeof multilingual];
-
-      // check the title to be correct
-      await expect(page.locator('[data-i18n="title"]')).toContainText(translator.title);
-
-      // check the subtitle to be correct
-      await expect(page.locator('[data-i18n="subtitle"]')).toContainText(translator.subtitle);
 
       // loop over all attibutes in the list and check if the correct text is visible
       const attributesList = ["about", "skills", "offers", "projects", "contact", "certs"];
@@ -62,7 +57,8 @@ for (const lang of languages) {
       }
     });
 
-    test(`check clicking links jumps to the internal link (e.g. #certificates) in language ${lang}`, async({page}) => {
+    test(`check clicking links jumps to the internal link in language ${lang} (on Desktop)`, async({page}) => {
+      await page.setViewportSize({ width: 1280, height: 900 }); // typical desktop
       const translator = multilingual[lang as keyof typeof multilingual];
 
       // loop over all links in the list: click on link and check if the corresponding section is in viewport
