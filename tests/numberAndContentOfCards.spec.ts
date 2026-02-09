@@ -7,13 +7,14 @@ test.beforeEach(async ({ page }) => {
     });
 
 test('check number of certificates is at least NN', async({page}) => {
-  const cards = page.locator('[data-title]');
+//  const cards = page.locator('[data-title]');
+  const cards = page.locator('.card');
   const count = await cards.count();
   expect(count).toBeGreaterThanOrEqual(numberOfCertificatesExpected);
 });
 
 test('for each certificate/card check if it has a non-empty attributes', async({page}) => {
-  const cards = page.locator('[data-title]');
+  const cards = page.locator('.card');
   const count = await cards.count();
   
   for (let i = 0; i < count; i++) {

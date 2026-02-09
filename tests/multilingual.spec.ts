@@ -24,10 +24,13 @@ for (const lang of languages) {
       const translator = multilingual[lang as keyof typeof multilingual];
 
       // check that title and subtitle are in viewport
-      await expect(page.getByText(translator.title)).toBeInViewport();
-      await expect(page.getByText(translator.title)).toBeVisible();
-      await expect(page.getByText(translator.subtitle)).toBeInViewport();
-      await expect(page.getByText(translator.subtitle)).toBeVisible();
+      //const titleLocator = page.locator('[data-i18n="title"]');
+      const titleLocator = page.getByTestId('title');
+      await expect(titleLocator.getByText(translator.title)).toBeInViewport();
+      await expect(titleLocator.getByText(translator.title)).toBeVisible();
+      const subTitleLocator = page.getByTestId('subtitle');
+      await expect(subTitleLocator.getByText(translator.subtitle)).toBeInViewport();
+      await expect(subTitleLocator.getByText(translator.subtitle)).toBeVisible();
 
       // Check that name is in viewport
       await expect(page.getByText('Dr. Geert Solvie')).toBeVisible();
