@@ -7,6 +7,7 @@ const multilingual = {de: de , en: en};
 
 // perform check for supported languages
 for (const lang of languages) {
+  const translator = multilingual[lang as keyof typeof multilingual];
   console.log(`Testing in language ${lang}`);
 
   test.describe(`Homepage in ${lang}`, () => {
@@ -21,8 +22,6 @@ for (const lang of languages) {
 
 
     test('check Logo, Name and Title are visible and in viewport', async({page}) => {
-      const translator = multilingual[lang as keyof typeof multilingual];
-
       // check that title and subtitle are in viewport
       //const titleLocator = page.locator('[data-i18n="title"]');
       const titleLocator = page.getByTestId('title');
@@ -51,7 +50,6 @@ for (const lang of languages) {
 
     test(`check headline labels in ${lang} are visible (on Desktop)`, async({page}) => {
       await page.setViewportSize({ width: 1280, height: 900 }); // typical desktop
-      const translator = multilingual[lang as keyof typeof multilingual];
 
       // loop over all attibutes in the list and check if the correct text is visible
       const attributesList = ["about", "skills", "offers", "projects", "contact", "certs"];
@@ -62,13 +60,43 @@ for (const lang of languages) {
 
     test(`check clicking links jumps to the internal link in language ${lang} (on Desktop)`, async({page}) => {
       await page.setViewportSize({ width: 1280, height: 900 }); // typical desktop
-      const translator = multilingual[lang as keyof typeof multilingual];
 
       // loop over all links in the list: click on link and check if the corresponding section is in viewport
       const linkList = ["about", "skills", "offers", "projects", "contact", "certs"];
       for (const link of linkList) {
         await page.getByRole('link', { name: translator[link as keyof typeof translator] }).click();
         await expect(page.getByRole('heading', { name: translator[link as keyof typeof translator] })).toBeInViewport();
+      }
+    });
+
+    test(`for each project-card check content in ${lang}`, async({page}) => {
+      const projects = page.getByTestId("project-card");
+      const count = await projects.count();
+
+      for (let i = 0; i < count; i++) {
+        // project title not to be empty
+        const projectNtitle = "project"+(i+1)+"title";
+        const title = await projects.nth(i).locator('[data-i18n="'+projectNtitle+'"]').textContent();
+        expect(title).not.toBeNull();
+        expect(title?.trim().length).toBeGreaterThan(0);
+        // project title according to the json-entry in correct language
+        const titleExpected = translator[projectNtitle as keyof typeof translator];
+        expect(title).toBe(titleExpected);
+        
+        // project description not to be empty
+        const projectNdescription = "project"+(i+1)+"description";
+        const description = await projects.nth(i).locator('[data-i18n="'+projectNdescription+'"]').textContent();
+        expect(description).not.toBeNull(); 
+        expect(description?.trim().length).toBeGreaterThan(0);
+        // project description according to the json-entry in correct language
+        const descriptionExpected = translator[projectNtitle as keyof typeof translator];
+        expect(title).toBe(descriptionExpected);
+
+        // at least 1 image to be visible and loaded
+        const images = projects.nth(i).getByRole('img');
+        await expect(images.first()).toBeVisible();
+        const isLoaded = await images.first().evaluate((el: HTMLImageElement) => el.complete && el.naturalWidth > 0);
+        expect(isLoaded).toBe(true);
       }
     });
   });
